@@ -8,11 +8,17 @@ select * from ratings;
 
 -- 1. List all customers who have made purchases of more than $80.
 SELECT 
-	u.user_id, 
-	u.name
-FROM users u
-RIGHT JOIN orders o ON o.user_id = u.user_id
-WHERE o.total_amount > 80;
+    u.name, 
+    u.email, 
+    SUM(o.total_amount) AS total_spent
+FROM 
+    users u
+JOIN 
+    orders o ON u.user_id = o.user_id
+GROUP BY 
+    u.user_id
+HAVING 
+    total_spent > 80;
   
 -- 2. Retrieve all orders placed in the last 280 days along with the customer name and email.
 SELECT 
@@ -72,12 +78,13 @@ GROUP BY u.name, p.name;
 
 -- 9. Fetch all customers and the total number of orders they have placed
 SELECT 
-	u.name AS Customer_Name, 
-    SUM(od.quantity) as Tot_Num_Orders
-FROM users u
-INNER JOIN orders o ON u.user_id = o.user_id
-INNER JOIN order_details od ON o.order_id = od.order_id
-GROUP BY u.name;
+    u.name AS customer_name, 
+    u.email, 
+    COUNT(o.order_id) AS total_orders
+FROM 
+    users u
+LEFT JOIN orders o ON u.user_id = o.user_id
+GROUP BY u.user_id;
 
 -- 10. Retrieve the average rating for all products in the Electronics category.
 select p.category, AVG(r.rating) AS Avg_Ratings
